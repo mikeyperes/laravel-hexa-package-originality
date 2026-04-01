@@ -25,10 +25,7 @@ class OriginalityServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/../../routes/originality.php');
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'originality');
 
-        // Settings card
-        view()->composer('*', function ($view) {
-            $view->getFactory()->startPush('settings-cards', view('originality::partials.settings-card')->render());
-        });
+        // Settings card — uses @push in blade template directly
 
         // Sidebar link
         if (class_exists(\hexa_core\Services\PackageRegistryService::class)) {

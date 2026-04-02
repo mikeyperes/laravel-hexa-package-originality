@@ -54,7 +54,7 @@ class OriginalityController extends Controller
         Setting::setValue('originality_enabled', $validated['enabled'] ?? true);
         Setting::setValue('originality_debug_mode', $validated['debug_mode'] ?? false);
 
-        hexaLog('originality', 'settings_updated', 'Originality.ai  settings updated');
+        hexaLog('originality', 'settings_updated', 'Originality.ai settings updated');
 
         return response()->json(['success' => true, 'message' => 'Settings saved.']);
     }

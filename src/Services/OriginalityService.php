@@ -7,7 +7,7 @@ use hexa_core\Services\GenericService;
 use Illuminate\Support\Facades\Http;
 
 /**
- * OriginalityService — AI content detection via Originality.ai  API.
+ * OriginalityService — AI content detection via Originality.ai API.
  *
  * Detects AI-generated text with per-sentence probability scoring.
  * Free tier: 10,000 words/month. API: api.originality.me
@@ -25,7 +25,7 @@ class OriginalityService
     }
 
     /**
-     * Check if Originality.ai  is enabled.
+     * Check if Originality.ai is enabled.
      *
      * @return bool
      */
@@ -64,11 +64,11 @@ class OriginalityService
     {
         $apiKey = $this->getApiKey();
         if (empty($apiKey)) {
-            return ['success' => false, 'message' => 'Originality.ai  API key not configured.'];
+            return ['success' => false, 'message' => 'Originality.ai API key not configured.'];
         }
 
         if (!$this->isEnabled()) {
-            return ['success' => false, 'message' => 'Originality.ai  is disabled.'];
+            return ['success' => false, 'message' => 'Originality.ai is disabled.'];
         }
 
         // Debug mode: only send first 3 sentences
@@ -87,7 +87,7 @@ class OriginalityService
 
             if (!$response->successful()) {
                 $error = $response->json('error') ?? $response->body();
-                return ['success' => false, 'message' => 'Originality.ai  API error: ' . (is_string($error) ? $error : json_encode($error))];
+                return ['success' => false, 'message' => 'Originality.ai API error: ' . (is_string($error) ? $error : json_encode($error))];
             }
 
             $data = $response->json();
@@ -105,7 +105,7 @@ class OriginalityService
                 ],
             ];
         } catch (\Exception $e) {
-            return ['success' => false, 'message' => 'Originality.ai  request failed: ' . $e->getMessage()];
+            return ['success' => false, 'message' => 'Originality.ai request failed: ' . $e->getMessage()];
         }
     }
 
@@ -118,7 +118,7 @@ class OriginalityService
     {
         $result = $this->detect('The quick brown fox jumps over the lazy dog. This is a simple test sentence written by a human.');
         if ($result['success']) {
-            return ['success' => true, 'message' => 'Originality.ai  API connected. AI probability: ' . round(($result['data']['completely_generated_prob'] ?? 0) * 100) . '%'];
+            return ['success' => true, 'message' => 'Originality.ai API connected. AI probability: ' . round(($result['data']['completely_generated_prob'] ?? 0) * 100) . '%'];
         }
         return $result;
     }

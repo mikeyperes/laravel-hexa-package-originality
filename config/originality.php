@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '1.0.0',
+    'version' => '1.0.1',
     'enabled' => true,
     'api_url' => 'https://api.originality.me/v2/predict',
     'setting_keys' => [

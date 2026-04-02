@@ -45,12 +45,17 @@ class OriginalityService
     }
 
     /**
-     * Get the API key.
+     * Get the API key (from CredentialService or legacy Setting).
      *
      * @return string|null
      */
     public function getApiKey(): ?string
     {
+        if (class_exists(\hexa_core\Services\CredentialService::class)) {
+            $cred = app(\hexa_core\Services\CredentialService::class);
+            $val = $cred->get('originality', 'api_key');
+            if ($val) return $val;
+        }
         return Setting::getValue('originality_api_key');
     }
 

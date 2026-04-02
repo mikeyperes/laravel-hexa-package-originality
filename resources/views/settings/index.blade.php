@@ -9,8 +9,14 @@
         <h3 class="font-semibold text-gray-800 mb-1">Originality.ai AI Detection</h3>
         <p class="text-sm text-gray-500 mb-4">Detect AI-generated content with per-sentence probability scoring.</p>
 
-        <div class="bg-blue-50 rounded-lg p-3 text-sm text-blue-800 mb-4">
-            <strong>Setup:</strong> Get your API key at <a href="https://originality.ai/dashboard" target="_blank" class="underline inline-flex items-center gap-1">originality.ai/dashboard <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>. Free tier: 10,000 words/month.
+        <div class="bg-blue-50 rounded-lg p-4 text-sm text-blue-800 mb-4 space-y-2">
+            <p class="font-semibold">Setup Instructions</p>
+            <ol class="list-decimal list-inside space-y-1 text-blue-700">
+                <li>Create an account at <a href="https://app.originality.ai/signup" target="_blank" class="underline inline-flex items-center gap-1">app.originality.ai <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a> and subscribe to Enterprise plan</li>
+                <li>Go to <a href="https://app.originality.ai/home/api-token-dashboard" target="_blank" class="underline inline-flex items-center gap-1">API Token Dashboard <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a> and generate your API key</li>
+                <li>Paste the key below and click Test to verify</li>
+            </ol>
+            <p class="text-xs text-blue-600">Docs: <a href="https://docs.originality.ai/api-v2-0-new" target="_blank" class="underline inline-flex items-center gap-1">API v2 docs <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a> | Rate limit: 500 req/min. Disable auto top-up in <a href="https://app.originality.ai/home/account#topup" target="_blank" class="underline inline-flex items-center gap-1">account settings <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>.</p>
         </div>
 
         <div class="space-y-4">

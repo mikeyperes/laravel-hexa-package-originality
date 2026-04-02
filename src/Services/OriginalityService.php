@@ -117,16 +117,44 @@ class OriginalityService
     }
 
     /**
-     * Test the API connection with a simple request.
+     * Test the API connection by verifying the API key is accepted.
      *
      * @return array{success: bool, message: string}
      */
     public function testConnection(): array
     {
-        $result = $this->detect('The quick brown fox jumps over the lazy dog. This is a simple test sentence written by a human.');
-        if ($result['success']) {
-            return ['success' => true, 'message' => 'Originality.ai API connected. Original score: ' . round(($result['data']['original_score'] ?? 0) * 100) . '%'];
+        $apiKey = $this->getApiKey();
+        if (empty($apiKey)) {
+            return ['success' => false, 'message' => 'Originality.ai API key not configured.'];
         }
-        return $result;
+
+        try {
+            // Minimal scan to verify key — uses credits
+            $response = Http::withHeaders([
+                'X-OAI-API-KEY' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->timeout(15)->post(config('originality.api_url', 'https://api.originality.ai/api/v3/scan'), [
+                'title' => 'Connection test',
+                'content' => 'Test connection verification.',
+                'check_ai' => true,
+                'check_plagiarism' => false,
+                'aiModelVersion' => 'lite',
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $credits = $data['results']['credits'] ?? $data['credits'] ?? null;
+                $msg = 'Originality.ai API connected successfully.';
+                if ($credits !== null) {
+                    $msg .= ' Credits used: ' . $credits . '.';
+                }
+                return ['success' => true, 'message' => $msg];
+            }
+
+            $error = $response->json('error') ?? $response->json('message') ?? $response->body();
+            return ['success' => false, 'message' => 'Originality.ai API error (' . $response->status() . '): ' . (is_string($error) ? $error : json_encode($error))];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => 'Originality.ai connection failed: ' . $e->getMessage()];
+        }
     }
 }

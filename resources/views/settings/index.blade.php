@@ -26,18 +26,36 @@
     />
 
     {{-- Settings --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
         <h3 class="font-semibold text-gray-800">Settings</h3>
 
-        <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" x-model="enabled" class="rounded border-gray-300 text-blue-600">
-            <span class="text-sm text-gray-700">Enable Originality.ai</span>
-        </label>
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-700">Enable Originality.ai</p>
+                <p class="text-xs text-gray-400">Include in pipeline AI detection scans</p>
+            </div>
+            <button @click="enabled = !enabled" type="button"
+                class="relative inline-flex h-7 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                :class="enabled ? 'bg-green-500' : 'bg-gray-300'"
+                role="switch" :aria-checked="enabled">
+                <span class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                    :class="enabled ? 'translate-x-7' : 'translate-x-0'"></span>
+            </button>
+        </div>
 
-        <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" x-model="debugMode" class="rounded border-gray-300 text-yellow-600">
-            <span class="text-sm text-gray-700">Debug Mode <span class="text-gray-400">(sends only first 3 sentences to save credits)</span></span>
-        </label>
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-700">Debug Mode</p>
+                <p class="text-xs text-gray-400">Sends only first 3 sentences to save credits</p>
+            </div>
+            <button @click="debugMode = !debugMode" type="button"
+                class="relative inline-flex h-7 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                :class="debugMode ? 'bg-yellow-500' : 'bg-gray-300'"
+                role="switch" :aria-checked="debugMode">
+                <span class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                    :class="debugMode ? 'translate-x-7' : 'translate-x-0'"></span>
+            </button>
+        </div>
 
         <button @click="save()" :disabled="saving" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 inline-flex items-center gap-2">
             <svg x-show="saving" x-cloak class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
@@ -47,8 +65,19 @@
         <div x-show="saveResult" x-cloak class="p-3 rounded-lg text-sm border" :class="saveSuccess ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'" x-text="saveResult"></div>
     </div>
 
-    <div class="text-center">
-        <a href="{{ route('originality.raw') }}" class="text-sm text-blue-600 hover:underline">Open Raw Test Page &rarr;</a>
+    {{-- Pages --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="font-semibold text-gray-800 mb-3">Pages</h3>
+        <div class="space-y-2">
+            <a href="{{ route('originality.settings') }}" class="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Settings
+            </a>
+            <a href="{{ route('originality.raw') }}" class="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                Raw Test Page
+            </a>
+        </div>
     </div>
 </div>
 

@@ -79,28 +79,35 @@ class OriginalityService
 
         try {
             $response = Http::withHeaders([
-                'x-api-key' => $apiKey,
+                'X-OAI-API-KEY' => $apiKey,
                 'Content-Type' => 'application/json',
-            ])->timeout(30)->post(config('originality.api_url', 'https://api.originality.me/v2/predict/text'), [
-                'document' => $text,
+            ])->timeout(30)->post(config('originality.api_url', 'https://api.originality.ai/api/v3/scan'), [
+                'title' => 'Detection scan',
+                'content' => $text,
+                'check_ai' => true,
+                'check_plagiarism' => false,
+                'aiModelVersion' => 'turbo',
             ]);
 
             if (!$response->successful()) {
-                $error = $response->json('error') ?? $response->body();
-                return ['success' => false, 'message' => 'Originality.ai API error: ' . (is_string($error) ? $error : json_encode($error))];
+                $error = $response->json('error') ?? $response->json('message') ?? $response->body();
+                return ['success' => false, 'message' => 'Originality.ai API error (' . $response->status() . '): ' . (is_string($error) ? $error : json_encode($error))];
             }
 
             $data = $response->json();
+            $ai = $data['results']['ai'] ?? $data['ai'] ?? [];
+            $originalScore = $ai['score']['original'] ?? $ai['original'] ?? null;
+            $aiScore = $ai['score']['ai'] ?? $ai['ai'] ?? null;
 
             return [
                 'success' => true,
                 'message' => 'Detection complete.',
                 'data' => [
-                    'completely_generated_prob' => $data['documents'][0]['completely_generated_prob'] ?? null,
-                    'average_generated_prob' => $data['documents'][0]['average_generated_prob'] ?? null,
-                    'overall_burstiness' => $data['documents'][0]['overall_burstiness'] ?? null,
-                    'sentences' => $data['documents'][0]['sentences'] ?? [],
-                    'predicted_class' => $data['documents'][0]['predicted_class'] ?? null,
+                    'original_score' => $originalScore,
+                    'ai_score' => $aiScore,
+                    'classification' => $ai['classification'] ?? null,
+                    'credits_used' => $data['results']['credits'] ?? null,
+                    'sentences' => [],
                     'raw' => $data,
                 ],
             ];
@@ -118,7 +125,7 @@ class OriginalityService
     {
         $result = $this->detect('The quick brown fox jumps over the lazy dog. This is a simple test sentence written by a human.');
         if ($result['success']) {
-            return ['success' => true, 'message' => 'Originality.ai API connected. AI probability: ' . round(($result['data']['completely_generated_prob'] ?? 0) * 100) . '%'];
+            return ['success' => true, 'message' => 'Originality.ai API connected. Original score: ' . round(($result['data']['original_score'] ?? 0) * 100) . '%'];
         }
         return $result;
     }

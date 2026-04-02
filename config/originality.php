@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'version' => '1.0.1',
+    'version' => '1.0.2',
     'enabled' => true,
-    'api_url' => 'https://api.originality.me/v2/predict',
+    'api_url' => 'https://api.originality.ai/api/v3/scan',
     'setting_keys' => [
         'api_key' => 'originality_api_key',
         'enabled' => 'originality_enabled',

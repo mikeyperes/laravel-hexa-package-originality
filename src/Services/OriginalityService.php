@@ -2,8 +2,10 @@
 
 namespace hexa_package_originality\Services;
 
+use hexa_core\AI\Contracts\AiTransactionRecorder;
 use hexa_core\Models\Setting;
 use hexa_core\Services\GenericService;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -83,16 +85,7 @@ class OriginalityService
         }
 
         try {
-            $response = Http::withHeaders([
-                'X-OAI-API-KEY' => $apiKey,
-                'Content-Type' => 'application/json',
-            ])->timeout(30)->post(config('originality.api_url', 'https://api.originality.ai/api/v3/scan'), [
-                'title' => 'Detection scan',
-                'content' => $text,
-                'check_ai' => true,
-                'check_plagiarism' => false,
-                'aiModelVersion' => 'turbo',
-            ]);
+            $response = $this->requestScan($apiKey, $text, 'turbo', 30, 'detector.scan');
 
             if (!$response->successful()) {
                 $error = $response->json('error') ?? $response->json('message') ?? $response->body();
@@ -135,16 +128,7 @@ class OriginalityService
 
         try {
             // Minimal scan to verify key — uses credits
-            $response = Http::withHeaders([
-                'X-OAI-API-KEY' => $apiKey,
-                'Content-Type' => 'application/json',
-            ])->timeout(15)->post(config('originality.api_url', 'https://api.originality.ai/api/v3/scan'), [
-                'title' => 'Connection test',
-                'content' => 'Test connection verification.',
-                'check_ai' => true,
-                'check_plagiarism' => false,
-                'aiModelVersion' => 'lite',
-            ]);
+            $response = $this->requestScan($apiKey, 'Test connection verification.', 'lite', 15, 'detector.connection_test');
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -160,6 +144,64 @@ class OriginalityService
             return ['success' => false, 'message' => 'Originality.ai API error (' . $response->status() . '): ' . (is_string($error) ? $error : json_encode($error))];
         } catch (\Exception $e) {
             return ['success' => false, 'message' => 'Originality.ai connection failed: ' . $e->getMessage()];
+        }
+    }
+
+    private function requestScan(string $apiKey, string $text, string $model, int $timeout, string $operation): Response
+    {
+        $endpoint = (string) config('originality.api_url', 'https://api.originality.ai/api/v3/scan');
+        $units = ['characters' => mb_strlen($text), 'words' => str_word_count($text)];
+        $span = app(AiTransactionRecorder::class)->start([
+            'provider' => 'originality',
+            'package' => 'hexawebsystems/laravel-hexa-package-originality',
+            'model' => 'originality-'.$model,
+            'operation' => $operation,
+            'endpoint' => parse_url($endpoint, PHP_URL_PATH) ?: '/api/v3/scan',
+            'request_metadata' => array_merge($units, [
+                'timeout_seconds' => $timeout,
+                'check_ai' => true,
+                'check_plagiarism' => false,
+            ]),
+        ]);
+
+        try {
+            $response = Http::withHeaders([
+                'X-OAI-API-KEY' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->timeout($timeout)->post($endpoint, [
+                'title' => $operation === 'detector.connection_test' ? 'Connection test' : 'Detection scan',
+                'content' => $text,
+                'check_ai' => true,
+                'check_plagiarism' => false,
+                'aiModelVersion' => $model,
+            ]);
+
+            $credits = $response->json('results.credits') ?? $response->json('credits');
+            $usage = array_merge($units, ['credits_used' => is_numeric($credits) ? (float) $credits : null]);
+            $attributes = [
+                'provider_request_id' => $response->header('x-request-id'),
+                'http_status' => $response->status(),
+                'usage' => $usage,
+                'response_metadata' => [
+                    'classification' => $response->json('results.ai.classification') ?? $response->json('ai.classification'),
+                    'ai_score' => $response->json('results.ai.score.ai') ?? $response->json('ai.score.ai'),
+                    'original_score' => $response->json('results.ai.score.original') ?? $response->json('ai.score.original'),
+                ],
+            ];
+
+            if ($response->successful()) {
+                $span->succeed($attributes);
+            } else {
+                $span->fail((string) ($response->json('message') ?? 'Originality.ai request failed.'), array_merge($attributes, [
+                    'error_type' => 'originality_http_error',
+                ]));
+            }
+
+            return $response;
+        } catch (\Throwable $e) {
+            $span->fail($e, ['usage' => $units]);
+
+            throw $e;
         }
     }
 }

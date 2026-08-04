@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => '2.0.4',
+    'version' => '2.0.6',
     'enabled' => true,
     'api_url' => 'https://api.originality.ai/api/v3/scan',
     'setting_keys' => [

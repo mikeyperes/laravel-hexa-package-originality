@@ -2,7 +2,12 @@
     "name": "hexawebsystems/laravel-hexa-package-originality",
     "description": "Originality.ai — Most accurate AI detection + plagiarism",
     "type": "library",
+    "version": "2.0.6",
     "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "hexawebsystems/laravel-hexa-core": "*"
+    },
     "autoload": {
         "psr-4": {
             "hexa_package_originality\\": "src/"
